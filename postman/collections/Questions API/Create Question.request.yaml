@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{base_url}}/api/questions"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "question": "What is Postman?",
+      "answer": "An API platform for building and using APIs."
+    }
+order: 4000

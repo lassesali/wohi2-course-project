@@ -6,17 +6,7 @@ const questions = require("../data/questions");
 // GET /questions
 // List all questions
 router.get("/", (req, res) => {
-  const { keyword } = req.query;
-
-  if (!keyword) {
-    return res.json(questions);
-  }
-
-  const filteredQuestions = questions.filter(question =>
-    question.keywords.includes(keyword.toLowerCase())
-  );
-
-  res.json(filteredQuestions);
+  return res.json(questions);
 });
 
 // GET /questions/:questionId
@@ -54,9 +44,9 @@ router.post("/", (req,res) => {
 //PUT
 router.put("/:questionId", (req, res) => {
   const questionId = Number(req.params.questionId);
-  const quest = questions.find((q) => q.id === questionId);
+  const questionItem = questions.find((q) => q.id === questionId);
 
-  if (!quest) {
+  if (!questionItem) {
     return res.status(404).json({ message: "Question not found" });
   }
 
@@ -65,10 +55,10 @@ router.put("/:questionId", (req, res) => {
         return res.status(400).json({msg: "Question and answer are required"})
     }
 
-  quest.question = question;
-  quest.answer = answer;
+  questionItem.question = question;
+  questionItem.answer = answer;
   
-  res.json(quest);
+  res.json(questionItem);
 });
 
 //DELETE
