@@ -23,6 +23,9 @@ const seedPosts = [
 async function main() {
   await prisma.question.deleteMany();
 
+  // reset the AUTO_INCREMENT counter to 1
+  await prisma.$executeRaw`ALTER TABLE Question AUTO_INCREMENT = 1;` 
+
   for (const question of seedPosts) {
     await prisma.question.create({
       data: {
