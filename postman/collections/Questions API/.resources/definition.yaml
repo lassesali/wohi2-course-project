@@ -1,4 +1,0 @@
-$kind: collection
-description: Collection for the Questions API (base path /api/questions).
-variables:
-  base_url: http://localhost:3000
