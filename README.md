@@ -38,17 +38,18 @@ Make sure you have [Node.js](https://nodejs.org/) and [MySQL](https://www.mysql.
 
 3. **Set up environment variables**
    Create a .env file in the root directory and add your database connection string:
+   ```bash
    DATABASE_URL="mysql://USER:PASSWORD@localhost:3306/quiz_db"
 
-4. **Run database migrations**
+5. **Run database migrations**
    ```bash
    npx prisma migrate dev --name init
 
-5. **Populate the database**
+6. **Populate the database**
    ```bash
    npx prisma db seed
 
-6. **Start the development server**
+7. **Start the development server**
    ```bash
    npm run dev
 
