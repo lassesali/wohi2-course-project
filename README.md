@@ -57,7 +57,12 @@ Make sure you have [Node.js](https://nodejs.org/) and [MySQL](https://www.mysql.
 ## 📡 API Endpoints (Draft)
 
 GET /api/questions - List all questions
+
 GET /api/questions/:qId - Show a specific question
+
 POST /api/questions - Create a new question
+
 PUT /api/questions/:qId - Edit a question
+
 DELETE /api/questions/:qId - Delete a question
+
