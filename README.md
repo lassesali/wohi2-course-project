@@ -37,6 +37,7 @@ Make sure you have [Node.js](https://nodejs.org/) and [MySQL](https://www.mysql.
    npm install
 
 3. **Set up environment variables**
+
    Create a .env file in the root directory and add your database connection string:
    ```bash
    DATABASE_URL="mysql://USER:PASSWORD@localhost:3306/quiz_db"
