@@ -21,11 +21,14 @@ app.listen(PORT, () => {
 
 // Graceful shutdown
 process.on("SIGINT", async () => {
-  await prisma.$disconnect();
+  // Check if prisma exists before trying to disconnect
+  if (typeof prisma !== 'undefined') {
+    await prisma.$disconnect();
+  }
   process.exit(0);
 });
 
-process.on('SIGINT', async () => {
+process.on('SIGTERM', async () => {
   // Check if prisma exists before trying to disconnect
   if (typeof prisma !== 'undefined') {
     await prisma.$disconnect();
