@@ -25,7 +25,10 @@ process.on("SIGINT", async () => {
   process.exit(0);
 });
 
-process.on("SIGTERM", async () => {
-  await prisma.$disconnect();
+process.on('SIGINT', async () => {
+  // Check if prisma exists before trying to disconnect
+  if (typeof prisma !== 'undefined') {
+    await prisma.$disconnect();
+  }
   process.exit(0);
 });
