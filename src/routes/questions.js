@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const prisma = require("../lib/prisma");
+const authenticate = require("../middleware/auth");
+const isOwner = require("../middleware/isOwner");
 
 function formatQuestion(question) {
   return {
@@ -8,6 +10,7 @@ function formatQuestion(question) {
   };
 }
 
+router.use(authenticate);
 
 // GET /api/questions
 // List all questions
@@ -61,7 +64,7 @@ router.post("/", async (req,res) => {
 
 //PUT
 //Edit a specific question
-router.put("/:questionId", async (req, res) => {
+router.put("/:questionId", isOwner, async (req, res) => {
   const questionId = Number(req.params.questionId);
   const existingQuestion = await prisma.question.findUnique({
     where: { id: questionId }
@@ -89,7 +92,7 @@ router.put("/:questionId", async (req, res) => {
 
 //DELETE
 //Delete a specific question
-router.delete("/:questionId", async (req, res) => {
+router.delete("/:questionId", isOwner, async (req, res) => {
   const questionId = Number(req.params.questionId);
   
   const question = await prisma.question.findUnique({

@@ -1,4 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 
 const seedPosts = [
@@ -22,15 +23,29 @@ const seedPosts = [
 
 async function main() {
   await prisma.question.deleteMany();
+  await prisma.user.deleteMany();
+
+  // Create a default user
+  const hashedPassword = await bcrypt.hash("1234", 10);
+  const user = await prisma.user.create({
+    data: {
+      email: "octavia.blake756@gmail.com",
+      password: hashedPassword,
+      name: "Octavia",
+    },
+  });
+
+  console.log("Created user:", user.email);
 
   // reset the AUTO_INCREMENT counter to 1
-  await prisma.$executeRaw`ALTER TABLE Question AUTO_INCREMENT = 1;` 
+  //await prisma.$executeRaw`ALTER TABLE Question AUTO_INCREMENT = 1;` 
 
   for (const question of seedPosts) {
     await prisma.question.create({
       data: {
         question: question.question,
         answer: question.answer,
+        userId: user.id,
       },
     });
   }
