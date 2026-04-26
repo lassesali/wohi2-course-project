@@ -12,13 +12,14 @@ This repository contains the backend API for a user-driven quiz game. The core l
 * **Language:** JavaScript / TypeScript
 * **ORM:** Prisma
 * **Database:** MySQL
-* **API Testing:** Bruno (`.bru` files included)
+* ~~**API Testing:** Bruno (`.bru` files included)~~
 
 ## ✨ Features
 
 ### Currently Implemented
 * [x] Basic server setup and database connection
 * [x] Prisma schema initialization for core models
+* [x] Authentication (JWT)
 
 ## 🚀 Getting Started
 
@@ -66,3 +67,6 @@ PUT /api/questions/:qId - Edit a question
 
 DELETE /api/questions/:qId - Delete a question
 
+POST /api/auth/login - Login
+
+POST /api/auth/register - Register a new user
