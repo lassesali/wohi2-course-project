@@ -5,23 +5,28 @@ const prisma = new PrismaClient();
 const seedPosts = [
   {
     question: "What is the capital city of Japan?",
-    answer: "Tokyo",  
+    answer: "Tokyo",
+    keywords: ["geography", "asia", "cities", "japan"]
   },
   {
     question: "What is the hardest naturally occurring substance on Earth?",
     answer: "Diamond",
+    keywords: ["science", "geology", "minerals", "carbon"]
   },
   {
     question: "Who wrote the famous play Hamlet?",
     answer: "Shakespeare",
+    keywords: ["literature", "theatre", "history", "classics"]
   },
   {
     question: "What is the fastest land animal in the world?",
     answer: "Cheetah",
-  },
+    keywords: ["nature", "animals", "wildlife", "biology"]
+  }
 ];
 
 async function main() {
+  await prisma.keyword.deleteMany();
   await prisma.question.deleteMany();
   await prisma.user.deleteMany();
 
@@ -46,6 +51,12 @@ async function main() {
         question: question.question,
         answer: question.answer,
         userId: user.id,
+        keywords: {
+          connectOrCreate: question.keywords.map((kw) => ({
+            where: { name: kw },
+            create: { name: kw },
+          })),
+        },
       },
     });
   }
