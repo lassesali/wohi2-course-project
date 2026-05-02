@@ -130,18 +130,21 @@ router.post("/:questionId/play/", async (req,res) => {
   }
 
   // Save the attempt to the database
-  await prisma.attempt.create({
+  const newAttempt = await prisma.attempt.create({
     data: {
       userAnswer: answer,
-      isCorrect: isCorrect, // Dynamically sets to true or false
+      isCorrect: isCorrect, 
       userId: req.user.userId,
       questionId: questionId
     }
   });
 
   return res.status(201).json({ 
+      id: newAttempt.id,
       correct: isCorrect,
-      correctAnswer: question.answer
+      submittedAnswer: answer,
+      correctAnswer: question.answer,
+      createdAt: newAttempt.createdAt
   }); 
 
 });
