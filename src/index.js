@@ -1,8 +1,9 @@
+const path = require("path");
 const express = require('express');
-
 const app = express();
 const questionsRouter = require ("./routes/questions");
 const authRouter = require("./routes/auth");
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const PORT = process.env.PORT || 3000;
 
