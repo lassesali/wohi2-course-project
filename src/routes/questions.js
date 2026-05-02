@@ -91,7 +91,12 @@ router.get("/:questionId", async (req, res) => {
 
   const question = await prisma.question.findUnique({
     where: { id: questionId },
-    include: { keywords: true, user: true },
+    include: { 
+      keywords: true, 
+      user: true ,
+      attempts: { where: { userId: req.user.userId, isCorrect: true }, take: 1 },
+      _count: { select: { attempts: true } }
+    }
   });
 
   if (!question) {
