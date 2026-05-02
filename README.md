@@ -20,6 +20,9 @@ This repository contains the backend API for a user-driven quiz game. The core l
 * [x] Basic server setup and database connection
 * [x] Prisma schema initialization for core models
 * [x] Authentication (JWT)
+* [x] **Full-Stack Integration:** Connected the Express.js backend with the provided frontend UI.
+* [x] **M:N Attempt Logging:** Implemented an `Attempt` database model that records a complete history of user submissions (using `prisma.create`) without overwriting previous guesses.
+* [x] **Unrestricted Gameplay:** Configured the backend to accept consecutive submissions and allow authors to play their own questions, matching the frontend's open UI design.
 
 ## 🚀 Getting Started
 
