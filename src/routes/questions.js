@@ -191,6 +191,13 @@ router.put("/:questionId", isOwner, upload.single("image"), async (req, res) => 
     return res.status(400).json({msg: "Question and answer are required"})
   }
 
+  // If the answer has actually changed, delete all past attempts
+  if (existingQuestion.answer.toLowerCase().trim() !== answer.toLowerCase().trim()) {
+    await prisma.attempt.deleteMany({
+      where: { questionId: questionId }
+    });
+  }
+
  const keywordsArray = parseKeywords(keywords);
  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
  
@@ -224,6 +231,12 @@ router.delete("/:questionId", isOwner, async (req, res) => {
   if (!question) {
     return res.status(404).json({ message: "Question not found" });
   }
+
+  // Delete all the child attempts (so they aren't orphaned). 
+  // We didn't want to add cascade delete to the schema.
+  await prisma.attempt.deleteMany({
+    where: { questionId: questionId }
+  });
 
   await prisma.question.delete({ where: { id: questionId } });
 
