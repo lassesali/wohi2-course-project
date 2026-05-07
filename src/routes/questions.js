@@ -125,7 +125,7 @@ router.post("/:questionId/play/", async (req,res) => {
   }
 
   let isCorrect = false;
-  if ( question.answer.toLowerCase() == answer.toLowerCase() ) {
+  if ( question.answer.toLowerCase().trim() == answer.toLowerCase().trim() ) {
       isCorrect = true;
   }
 
