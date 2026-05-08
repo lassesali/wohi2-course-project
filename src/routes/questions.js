@@ -216,7 +216,10 @@ router.put("/:questionId", isOwner, upload.single("image"), async (req, res) => 
        })),
      },
    },
-   include: { keywords: true, user: true },
+   include: { keywords: true, 
+              user: true, 
+              attempts: { where: { userId: req.user.userId, isCorrect: true }, take: 1 }   
+            },
   });
   res.json(formatQuestion(updatedQuestion));
 });
@@ -228,7 +231,10 @@ router.delete("/:questionId", isOwner, async (req, res) => {
   
   const question = await prisma.question.findUnique({
     where: { id: questionId },
-    include: { keywords: true, user: true },
+    include: {  keywords: true, 
+                user: true, 
+                attempts: { where: { userId: req.user.userId, isCorrect: true }, take: 1 } 
+             }
   });
 
   if (!question) {
@@ -247,6 +253,18 @@ router.delete("/:questionId", isOwner, async (req, res) => {
     msg: "Question deleted successfully", 
     question: formatQuestion(question),
   });
+});
+
+// Multer errors as JSON
+router.use((err, req, res, next) => {
+  if (
+    err instanceof multer.MulterError ||
+    err?.message === "Only image files are allowed"
+  ) {
+    return res.status(400).json({ msg: err.message });
+  }
+
+  next(err);
 });
 
 module.exports = router;
