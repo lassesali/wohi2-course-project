@@ -95,21 +95,21 @@ Make sure you have [Node.js](https://nodejs.org/) and [MySQL](https://www.mysql.
 
 ### 🔐 Authentication
 
-POST /api/auth/login - Login
+**POST /api/auth/login** - Login
 
-POST /api/auth/register - Register a new user
+**POST /api/auth/register** - Register a new user
 
 ### 📝 Questions
 
-GET /api/questions - List all questions (supports pagination & keywords)
+**GET /api/questions** - List all questions (supports pagination & keywords)
 
-GET /api/questions/:qId - Show a specific question
+**GET /api/questions/:qId** - Show a specific question
 
-POST /api/questions - Create a question (supports image upload)
+**POST /api/questions** - Create a question (supports image upload)
 
-PUT	/api/questions/:id	Edit a question (Owner only)
+**PUT	/api/questions/:id** -	Edit a question (Owner only)
 
-DELETE	/api/questions/:id	Delete a question (Owner only)
+**DELETE	/api/questions/:id** -	Delete a question (Owner only)
 
-POST	/api/questions/:id/play	Submit an answer and log an attempt
+**POST	/api/questions/:id/play** - Submit an answer and log an attempt
 
