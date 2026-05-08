@@ -33,6 +33,34 @@ describe("pagination clamping", () => {
       .set("Authorization", `Bearer ${token}`);
     expect(res.body.page).toBe(1);
   });
+
+  it("correctly offsets data (skip) when page 2 is requested", async () => {
+    const token = await registerAndLogin();
+
+    // Create 6 questions
+    for (let i = 1; i <= 6; i++) {
+      await createQuestion(token, { question: `Question ${i}` });
+    }
+
+    // Fetch page 1 (limit 5)
+    const page1 = await request(app)
+      .get("/api/questions?page=1&limit=5")
+      .set("Authorization", `Bearer ${token}`);
+
+    const page1Ids = page1.body.data.map(q => q.id);
+
+    // Fetch page 2 (limit 5)
+    const page2 = await request(app)
+      .get("/api/questions?page=2&limit=5")
+      .set("Authorization", `Bearer ${token}`);
+
+    // Verify page 2 only has the 6th question
+    expect(page2.body.data.length).toBe(1);
+    expect(page2.body.total).toBe(6);
+    
+    // Verify the data window actually shifted
+    expect(page1Ids).not.toContain(page2.body.data[0].id);
+  });
 });
 
 describe("title length boundary", () => {

@@ -77,20 +77,31 @@ router.use(authenticate);
 router.get("/", async (req, res, next) => {
   try {
     const { keyword } = req.query;
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.max(1, Math.min(100, parseInt(req.query.limit) || 5));
+
+    // --- Pagination & Clamping Logic ---
+    // We avoid the '||' shortcut because '0 || 5' evaluates to 5 in JS.
+    // By checking isNaN, we ensure that a provided '0' is preserved as 0 
+    // so that Math.max(1, ...) can correctly clamp it to the floor of 1.
+
+    const rawPage = parseInt(req.query.page);
+    const pageInput = isNaN(rawPage) ? 1 : rawPage;
+    const page = Math.max(1, pageInput);
+    const rawLimit = parseInt(req.query.limit);
+    // Only use the default 5 if the input is actually missing or not a number (NaN)
+    const limitInput = isNaN(rawLimit) ? 5 : rawLimit; 
+    const limit = Math.max(1, Math.min(100, limitInput));
     const skip = (page - 1) * limit;
 
     const where = keyword ?
     { keywords: { some: { name: keyword } } } : {};
-
+    
     const [filteredQuestions, total] = await Promise.all([
         prisma.question.findMany({
             where,
             include: {
                 keywords: true,
                 user: true,
-                attempts: { where: { userId: req.user.userId, isCorrect: true }, take: 1 },
+                attempts: { where: { userId: Number(req.user.userId), isCorrect: true }, take: 1 },
                 _count: { select: { attempts: true } },
             },
             orderBy: { id: "asc" },
@@ -122,7 +133,7 @@ router.get("/:questionId", async (req, res, next) => {
       include: { 
         keywords: true, 
         user: true ,
-        attempts: { where: { userId: req.user.userId, isCorrect: true }, take: 1 },
+        attempts: { where: { userId: Number(req.user.userId), isCorrect: true }, take: 1 },
         _count: { select: { attempts: true } }
       }
     });
@@ -156,17 +167,14 @@ router.post("/:questionId/play/", async (req,res,next) => {
       throw new NotFoundError("Question not found");
     }
 
-    let isCorrect = false;
-    if ( question.answer.toLowerCase().trim() === String(answer).toLowerCase().trim() ) {
-        isCorrect = true;
-    }
+    const isCorrect = question.answer.trim().toLowerCase() === answer.trim().toLowerCase();
 
     // Save the attempt to the database
     const newAttempt = await prisma.attempt.create({
       data: {
         userAnswer: answer,
         isCorrect: isCorrect, 
-        userId: req.user.userId,
+        userId: Number(req.user.userId),
         questionId: questionId
       }
     });
@@ -174,6 +182,7 @@ router.post("/:questionId/play/", async (req,res,next) => {
     return res.status(201).json({ 
         id: newAttempt.id,
         correct: isCorrect,
+        isCorrect: isCorrect,
         submittedAnswer: answer,
         correctAnswer: question.answer,
         createdAt: newAttempt.createdAt
@@ -195,7 +204,7 @@ router.post("/", upload.single("image"), async (req,res,next) => {
 
       const newQuestion = await prisma.question.create({
         data: {
-          question, answer, userId: req.user.userId, imageUrl,
+          question, answer, userId: Number(req.user.userId), imageUrl,
           keywords: {
             connectOrCreate: keywordsArray.map((kw) => ({
               where: { name: kw }, create: { name: kw },
@@ -235,7 +244,7 @@ router.put("/:questionId", isOwner, upload.single("image"), async (req, res, nex
   const updatedQuestion = await prisma.question.update({
     where: { id: questionId },
     data: {
-      question, answer, userId: req.user.userId, imageUrl,
+      question, answer, userId: Number(req.user.userId), imageUrl,
       keywords: {
         set: [],
         connectOrCreate: keywordsArray.map((kw) => ({
@@ -246,7 +255,7 @@ router.put("/:questionId", isOwner, upload.single("image"), async (req, res, nex
     },
     include: { keywords: true, 
                 user: true, 
-                attempts: { where: { userId: req.user.userId, isCorrect: true }, take: 1 }   
+                attempts: { where: { userId: Number(req.user.userId), isCorrect: true }, take: 1 }   
               },
     });
     res.json(formatQuestion(updatedQuestion));

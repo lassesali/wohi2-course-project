@@ -18,7 +18,7 @@ async function isOwner (req, res, next) {
       throw new NotFoundError("Question not found");
     }
 
-    if (question.userId !== req.user.userId) {
+    if (Number(question.userId) !== Number(req.user.userId)) {
       throw new ForbiddenError("You can only modify your own questions");
     }
 
