@@ -2,6 +2,7 @@ const { request, app, prisma, resetDb, registerAndLogin, createQuestion } = requ
 
 beforeEach(resetDb);
 
+
 describe("POST /api/questions/:questionId/play", () => {
   let token;
   let question;
@@ -16,6 +17,9 @@ describe("POST /api/questions/:questionId/play", () => {
   });
 
   describe("1. Core Logic & Edge Cases", () => {
+
+
+    
     it("returns 201 and correct: true for an exact match", async () => {
       const res = await request(app)
         .post(`/api/questions/${question.id}/play`)
@@ -100,6 +104,7 @@ describe("POST /api/questions/:questionId/play", () => {
   });
 
   describe("3. Relational Data Integrity (The Architect Checks)", () => {
+    
     it("safely deletes attempts when a question is deleted (No Orphaned Records)", async () => {
       // 1. Play the question
       await request(app)
@@ -170,4 +175,65 @@ describe("POST /api/questions/:questionId/play", () => {
       expect(attemptCount).toBe(1);
     });
   });
+});
+
+describe("POST /api/questions/:questionId/play", () => {
+
+  describe("4. Advanced Integration & Defensive Checks", () => {
+
+    it("updates the 'solved' status in the question list after a successful play", async () => {
+      const token = await registerAndLogin();
+      const q = await createQuestion(token, { answer: "Winner" });
+
+      // 1. Initial check: should be unsolved
+      const initial = await request(app)
+        .get("/api/questions")
+        .set("Authorization", `Bearer ${token}`);
+      expect(initial.body.data[0].solved).toBe(false);
+
+      // 2. Play the question correctly
+      await request(app)
+        .post(`/api/questions/${q.id}/play`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ answer: "Winner" });
+
+      // 3. Updated check: should now be solved
+      const updated = await request(app)
+        .get("/api/questions")
+        .set("Authorization", `Bearer ${token}`);
+      expect(updated.body.data[0].solved).toBe(true);
+    });
+  });
+    
+  describe("5. Multi-User Isolation", () => {
+    it("ensures 'solved' status is private to each user", async () => {
+      // 1. Setup: User A creates a question
+      const tokenA = await registerAndLogin("userA@test.io", "User A"); //
+      const q = await createQuestion(tokenA, { answer: "Secret" }); //
+
+      // 2. User A solves their own question
+      await request(app)
+        .post(`/api/questions/${q.id}/play`)
+        .set("Authorization", `Bearer ${tokenA}`)
+        .send({ answer: "Secret" }); //
+
+      // 3. Verify User A sees it as solved
+      const resA = await request(app)
+        .get("/api/questions")
+        .set("Authorization", `Bearer ${tokenA}`); //
+      expect(resA.body.data[0].solved).toBe(true);
+
+      // 4. User B logs in
+      const tokenB = await registerAndLogin("userB@test.io", "User B"); //
+
+      // 5. Verify User B sees the same question as UNSOLVED
+      const resB = await request(app)
+        .get("/api/questions")
+        .set("Authorization", `Bearer ${tokenB}`); //
+      
+      // The solved status must be false for User B because they haven't played it
+      expect(resB.body.data[0].solved).toBe(false); 
+    });
+  });
+
 });

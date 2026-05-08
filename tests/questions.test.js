@@ -54,6 +54,65 @@ describe("GET /api/questions", () => {
       .set("Authorization", `Bearer ${token}`);
     expect(JSON.stringify(res.body)).not.toContain("password");
   });
+
+});
+
+describe("GET /api/questions (Math Clamping)", () => {
+  it("clamps limit down to 100 and up to 1 (Triggers Math.min/max)", async () => {
+    const token = await registerAndLogin();
+    
+    // Test the ceiling (100)
+    const resHigh = await request(app)
+      .get("/api/questions?limit=999")
+      .set("Authorization", `Bearer ${token}`);
+    expect(resHigh.body.limit).toBe(100);
+
+    // Test the floor (1)
+    const resLow = await request(app)
+      .get("/api/questions?limit=0")
+      .set("Authorization", `Bearer ${token}`);
+    expect(resLow.body.limit).toBe(1);
+  });
+});
+
+describe("Final Architectural Edge Cases", () => {
+  it("removes old keywords when a question is updated (Testing set: [])", async () => {
+    const token = await registerAndLogin();
+    // 1. Create with two keywords
+    const q = await createQuestion(token, { keywords: "math, science" });
+
+    // 2. Update to only one keyword
+    const res = await request(app)
+      .put(`/api/questions/${q.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        question: "Q",
+        answer: "A",
+        date: "2026-01-01",
+        keywords: "math" // 'science' is omitted
+      });
+
+    expect(res.body.keywords).toContain("math");
+    expect(res.body.keywords).not.toContain("science");
+    expect(res.body.keywords.length).toBe(1);
+  });
+
+  it("handles duplicate correct attempts efficiently (Testing take: 1)", async () => {
+    const token = await registerAndLogin();
+    const q = await createQuestion(token, { answer: "Paris" });
+
+    // 1. Play correctly TWICE
+    await request(app).post(`/api/questions/${q.id}/play`).set("Authorization", `Bearer ${token}`).send({ answer: "Paris" });
+    await request(app).post(`/api/questions/${q.id}/play`).set("Authorization", `Bearer ${token}`).send({ answer: "Paris" });
+
+    // 2. Fetch the question
+    const res = await request(app)
+      .get(`/api/questions/${q.id}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    // 3. formatQuestion should still show solved: true and not crash
+    expect(res.body.solved).toBe(true);
+  });
 });
 
 describe("GET /api/questions/:questionId", () => {
@@ -80,9 +139,8 @@ describe("GET /api/questions/:questionId", () => {
       solved: false,
     });
   });
-});
 
-it("filters questions when a keyword query parameter is provided", async () => {
+  it("filters questions when a keyword query parameter is provided", async () => {
     const token = await registerAndLogin();
     // 1. Create a specific question with a specific keyword
     await request(app)
@@ -99,6 +157,10 @@ it("filters questions when a keyword query parameter is provided", async () => {
     expect(res.body.data.length).toBeGreaterThan(0);
     expect(res.body.data[0].keywords).toContain("filterme");
   });
+
+});
+
+
 
 describe("POST /api/questions (validation)", () => {
   it("returns 400 when question is missing", async () => {
