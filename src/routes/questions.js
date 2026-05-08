@@ -115,6 +115,10 @@ router.post("/:questionId/play/", async (req,res) => {
 
   const { answer }  = req.body;
 
+  if (!answer) {
+    return res.status(400).json({msg: "Answer is required"});
+  }
+
   const question = await prisma.question.findUnique({
     where: { id: questionId },
     include: { keywords: true, user: true },
@@ -125,7 +129,7 @@ router.post("/:questionId/play/", async (req,res) => {
   }
 
   let isCorrect = false;
-  if ( question.answer.toLowerCase().trim() == answer.toLowerCase().trim() ) {
+  if ( question.answer.toLowerCase().trim() === String(answer).toLowerCase().trim() ) {
       isCorrect = true;
   }
 
