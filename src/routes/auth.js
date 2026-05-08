@@ -3,23 +3,34 @@ const router = express.Router();
 const prisma = require("../lib/prisma");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { z } = require("zod");
 const SECRET = process.env.JWT_SECRET;
+const { ValidationError } = require("../lib/errors");
+const { ConflictError } = require("../lib/errors");
+const { UnauthorizedError } = require("../lib/errors");
+
+const RegisterInput = z.object({
+  email: z.string().min(1).max(255),
+  password: z.string().min(1).max(72),
+  name: z.string().min(1).max(100),
+});
+
+const LoginInput = z.object({
+  email: z.string().min(1).max(255),
+  password: z.string().min(1).max(72),
+});
 
 // Here we will add all routes related to authentication
 
 // POST /api/auth/register
 router.post("/register", async (req, res) => {
-  const { email, password, name } = req.body;
-
-  if (!email || !password || !name) {
-    return res.status(400).json({ error: "email, password and name are required" });
-  }
+  const { email, password, name } = RegisterInput.parse(req.body);
 
   // Check if user already exists
   const existingUser = await prisma.user.findUnique({ where: { email },});
 
   if (existingUser) {
-    return res.status(409).json({ error: "Email already registered" });
+    throw new ConflictError("Email already registered");
   }
 
   // Hash the password
@@ -41,11 +52,7 @@ router.post("/register", async (req, res) => {
 
 // POST /api/auth/login
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "email and password are required" });
-  }
+  const { email, password } = LoginInput.parse(req.body);
 
   // Find the user
   const user = await prisma.user.findUnique({
@@ -53,14 +60,14 @@ router.post("/login", async (req, res) => {
   });
 
   if (!user) {
-    return res.status(401).json({ error: "Invalid credentials" });
+    throw new UnauthorizedError("Invalid credentials");
   }
 
   // Verify the password
   const isValid = await bcrypt.compare(password, user.password);
 
   if (!isValid) {
-    return res.status(401).json({ error: "Invalid credentials" });
+    throw new UnauthorizedError("Invalid credentials");
   }
 
   // Generate a token
