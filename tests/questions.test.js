@@ -388,6 +388,24 @@ describe("500 Internal Server Errors (Catch Blocks)", () => {
   });
 });
 
+it("catches errors in PUT /:questionId and passes them to the error handler", async () => {
+  const token = await registerAndLogin();
+  const question = await createQuestion(token); // Ensure ownership so isOwner passes
+
+  // Force Prisma to throw a simulated crash when attempting to update
+  vi.spyOn(prisma.question, 'update').mockRejectedValueOnce(new Error("Simulated DB Crash"));
+
+  const res = await request(app)
+    .put(`/api/questions/${question.id}`)
+    .set("Authorization", `Bearer ${token}`)
+    .send({ 
+      question: "Will this crash?", 
+      answer: "Yes" 
+    });
+
+  expect(res.status).toBe(500); // Verified by your global errorHandler.js
+});
+
 describe("formatQuestion Fallback Branches (Coverage Restorer)", () => {
   it("safely formats a question that is missing relational data", async () => {
     const token = await registerAndLogin();
