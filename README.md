@@ -1,6 +1,7 @@
 # 🧠 Quiz Game API 
 
 > **Status:** 🧪 Core Logic 100% Tested | 🐳 Deployment Pending (Week 8)
+> 
 > This project has evolved into a robust, defensively architected backend.
 > The foundational API architecture, authentication, and relational data logic are finalized and verified with a **100% test coverage** suite across all statements, branches, and functions.
 
