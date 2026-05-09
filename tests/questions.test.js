@@ -88,7 +88,6 @@ describe("Final Architectural Edge Cases", () => {
       .send({
         question: "Q",
         answer: "A",
-        date: "2026-01-01",
         keywords: "math" // 'science' is omitted
       });
 
@@ -146,7 +145,7 @@ describe("GET /api/questions/:questionId", () => {
     await request(app)
       .post("/api/questions")
       .set("Authorization", `Bearer ${token}`)
-      .send({ question: "Q", answer: "A", date: "2026-01-01", keywords: "filterme" });
+      .send({ question: "Q", answer: "A", keywords: "filterme" });
 
     // 2. Fetch using the query parameter to trigger Line 76's true branch
     const res = await request(app)
@@ -168,16 +167,7 @@ describe("POST /api/questions (validation)", () => {
     const res = await request(app)
       .post("/api/questions")
       .set("Authorization", `Bearer ${token}`)
-      .send({ date: "2026-01-01", answer: "hi" });
-    expect(res.status).toBe(400);
-  });
-
-  it("returns 400 when date is not a valid date string", async () => {
-    const token = await registerAndLogin();
-    const res = await request(app)
-      .post("/api/questions")
-      .set("Authorization", `Bearer ${token}`)
-      .send({ question: "T", date: "not-a-date", answer: "hi" });
+      .send({ answer: "hi" });
     expect(res.status).toBe(400);
   });
 
@@ -188,7 +178,6 @@ describe("POST /api/questions (validation)", () => {
       .set("Authorization", `Bearer ${token}`)
       .send({
         question: "T",
-        date: "2026-01-01",
         answer: "hi",
         userId: 99999,
       });
@@ -208,7 +197,7 @@ describe("PUT /api/questions/:questionId (authorization)", () => {
     const res = await request(app)
       .put(`/api/questions/${question.id}`)
       .set("Authorization", `Bearer ${bobToken}`)
-      .send({ question: "hijacked", date: "2026-01-01", answer: "x" });
+      .send({ question: "hijacked", answer: "x" });
 
     expect(res.status).toBe(403);
 
@@ -221,7 +210,7 @@ describe("PUT /api/questions/:questionId (authorization)", () => {
     const res = await request(app)
       .put(`/api/questions/not-a-number`) // Testing a PUT request with NaN
       .set("Authorization", `Bearer ${token}`)
-      .send({ question: "Q", answer: "A", date: "2026-01-01" });
+      .send({ question: "Q", answer: "A" });
       
     expect(res.status).toBe(404);
   });
@@ -231,7 +220,7 @@ describe("PUT /api/questions/:questionId (authorization)", () => {
     const res = await request(app)
       .put(`/api/questions/99999`) // Testing a PUT request with a ghost ID
       .set("Authorization", `Bearer ${token}`)
-      .send({ question: "Q", answer: "A", date: "2026-01-01" });
+      .send({ question: "Q", answer: "A" });
       
     expect(res.status).toBe(404);
   });
@@ -316,7 +305,6 @@ describe("Edge Cases: File Uploads & String Keywords", () => {
       .set("Authorization", `Bearer ${token}`)
       .field("question", "What color is the sky?")
       .field("answer", "Blue")
-      .field("date", "2026-01-01")
       .attach("image", Buffer.from("fake-image-data"), "test.png"); 
 
     expect(res.status).toBe(201);
@@ -332,7 +320,6 @@ describe("Edge Cases: File Uploads & String Keywords", () => {
       .set("Authorization", `Bearer ${token}`)
       .field("question", "Updated question text")
       .field("answer", "Updated answer text")
-      .field("date", "2026-01-01")
       .attach("image", Buffer.from("fake-updated-image"), "updated.png");
 
     expect(res.status).toBe(200);
@@ -345,7 +332,6 @@ describe("Edge Cases: File Uploads & String Keywords", () => {
       .set("Authorization", `Bearer ${token}`)
       .field("question", "What is 2+2?")
       .field("answer", "4")
-      .field("date", "2026-01-01")
       .attach("image", Buffer.from("fake-text-data"), "document.txt"); 
 
     expect(res.status).toBe(400);
@@ -363,7 +349,6 @@ describe("Edge Cases: File Uploads & String Keywords", () => {
       .send({
         question: "What does HTML stand for?",
         answer: "HyperText Markup Language",
-        date: "2026-01-01",
         keywords: "web, frontend, basics" 
       });
 

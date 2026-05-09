@@ -13,7 +13,6 @@ const QuestionInput = z.object({
   question: z.string().trim().min(1).max(255, "Question is too long"), 
   answer: z.string().trim().min(1).max(255, "Answer is too long"),
   keywords: z.union([z.array(z.string()), z.string()]).optional(),
-  date: z.string().date(),
 });
 
 const AnswerInput = z.object({
@@ -197,7 +196,7 @@ router.post("/:questionId/play/", async (req,res,next) => {
 // Create a new question
 router.post("/", upload.single("image"), async (req,res,next) => {
     try {
-      const { question, answer, keywords, date }  = QuestionInput.parse(req.body);
+      const { question, answer, keywords }  = QuestionInput.parse(req.body);
 
       const keywordsArray = parseKeywords(keywords);
       const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;

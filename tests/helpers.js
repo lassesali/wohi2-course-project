@@ -25,7 +25,6 @@ async function createQuestion(token, overrides = {}) {
     .set("Authorization", `Bearer ${token}`)
     .send({
       question: "Q",
-      date: "2026-01-01",
       answer: "C",
       ...overrides,
     });
