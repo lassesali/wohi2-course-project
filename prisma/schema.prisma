@@ -27,6 +27,8 @@ model Question {
   user     User @relation(fields: [userId], references: [id])
   imageUrl String? @db.VarChar(255)
   attempts  Attempt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@map("questions")
 }

@@ -69,7 +69,7 @@ describe("title length boundary", () => {
     const res = await request(app)
       .post("/api/questions")
       .set("Authorization", `Bearer ${token}`)
-      .send({ question: "a".repeat(255), date: "2026-01-01", answer: "C" });
+      .send({ question: "a".repeat(255), answer: "C" });
     expect(res.status).toBe(201);
   });
 
@@ -78,7 +78,7 @@ describe("title length boundary", () => {
     const res = await request(app)
       .post("/api/questions")
       .set("Authorization", `Bearer ${token}`)
-      .send({ question: "a".repeat(256), date: "2026-01-01", answer: "C" });
+      .send({ question: "a".repeat(256), answer: "C" });
     expect(res.status).toBe(400);
   });
 });
@@ -111,7 +111,6 @@ describe("file size boundary", () => {
       .set("Authorization", `Bearer ${token}`)
       .field("question", "Q")
       .field("answer", "A")
-      .field("date", "2026-01-01")
       .attach("image", Buffer.alloc(FIVE_MB - 1), {
         filename: "ok.png",
         contentType: "image/png",
@@ -126,7 +125,6 @@ describe("file size boundary", () => {
       .set("Authorization", `Bearer ${token}`)
       .field("question", "Q")
       .field("answer", "A")
-      .field("date", "2026-01-01")
       .attach("image", Buffer.alloc(FIVE_MB), {
         filename: "limit.png",
         contentType: "image/png",

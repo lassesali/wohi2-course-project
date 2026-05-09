@@ -142,8 +142,7 @@ describe("POST /api/questions/:questionId/play", () => {
         .send({
           question: "What is the capital of France?",
           answer: "Lyon", // Answer changed!
-          keywords: ["geography"],
-          date: "2026-01-01"
+          keywords: ["geography"]
         });
 
       expect(updateRes.status).toBe(200);
