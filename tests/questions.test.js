@@ -249,6 +249,30 @@ describe("DELETE /api/questions/:questionId", () => {
     const after = await prisma.question.findUnique({ where: { id: question.id } });
     expect(after).toBeNull();
   });
+
+  it("returns solved: true in the response payload if the user had solved it before deletion (Regression check)", async () => {
+    const token = await registerAndLogin();
+    
+    // 1. Create a target question
+    const q = await createQuestion(token, { question: "Delete Me Soon", answer: "42" });
+
+    // 2. Play it correctly to set the database state to 'solved' for this user
+    await request(app)
+      .post(`/api/questions/${q.id}/play`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ answer: "42" });
+
+    // 3. Perform the DELETE request and capture the response
+    const res = await request(app)
+      .delete(`/api/questions/${q.id}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    
+    // 4. The Regression Assertion: Ensure the 'question' object in the response 
+    // correctly parsed the snapshot and retained the solved: true status.
+    expect(res.body.question.solved).toBe(true); 
+  });
 });
 
 describe("unknown routes", () => {
@@ -379,3 +403,33 @@ describe("500 Internal Server Errors (Catch Blocks)", () => {
   });
 });
 
+describe("formatQuestion Fallback Branches (Coverage Restorer)", () => {
+  it("safely formats a question that is missing relational data", async () => {
+    const token = await registerAndLogin();
+
+    // 1. Hijack Prisma to return a completely stripped-down question
+    // with NO keywords, NO user, and NO attempts.
+    vi.spyOn(prisma.question, 'findUnique').mockResolvedValueOnce({
+      id: 888,
+      question: "Barebones Question",
+      answer: "Nothing else included",
+      userId: 1,
+      imageUrl: null
+      // Notice: We are intentionally leaving out 'keywords', 'user', and 'attempts'
+    });
+
+    // 2. Hit the GET route. The route will try to 'include' the relations, 
+    // but our mock will force it to return the barebones object above.
+    const res = await request(app)
+      .get("/api/questions/888")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    
+    // 3. This proves that formatQuestion hit the 'false' branches on lines 63-64
+    // without crashing your app!
+    expect(res.body.userName).toBeNull();
+    expect(res.body.keywords).toEqual([]);
+    expect(res.body.solved).toBe(false);
+  });
+});
