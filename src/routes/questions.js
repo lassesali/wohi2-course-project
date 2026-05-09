@@ -270,7 +270,16 @@ router.delete("/:questionId", isOwner, async (req, res, next) => {
   try {
     const questionId = req.question.id;
 
-    // REMOVED redundant prisma.findUnique and 404 check here!
+    // Grab the PERFECT snapshot of the question (with attempts and keywords) BEFORE deleting
+    const question = await prisma.question.findUnique({
+      where: { id: questionId },
+      include: { 
+        keywords: true, 
+        user: true,
+        attempts: { where: { userId: Number(req.user.userId), isCorrect: true }, take: 1 },
+        _count: { select: { attempts: true } }
+      }
+    });
 
     // Delete all the child attempts (so they aren't orphaned). 
     // We didn't want to add cascade delete to the schema.
@@ -282,8 +291,7 @@ router.delete("/:questionId", isOwner, async (req, res, next) => {
 
     res.json({
       msg: "Question deleted successfully", 
-      // Use req.question provided by the isOwner middleware!
-      question: formatQuestion(req.question),
+      question: formatQuestion(question),
     });
   } catch (err) { // Catch the error
     next(err);    // Pass it to our errorHandler.js
