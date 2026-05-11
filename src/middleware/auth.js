@@ -7,7 +7,7 @@ function authenticate(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    throw new UnauthorizedError("No token provided");
+    throw new UnauthorizedError("No token provided"); // This correctly throws a 401 for NO token
   }
 
   const token = authHeader.split(" ")[1];
@@ -18,7 +18,7 @@ function authenticate(req, res, next) {
     next();
   } catch (err) {
     req.log.warn({ err }, "Error authenticating");
-    throw new ForbiddenError("Invalid or expired token");
+    next(err); // Pass the original JWT error to the central error handler
   }
 }
 

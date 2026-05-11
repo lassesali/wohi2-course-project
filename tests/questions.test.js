@@ -26,7 +26,7 @@ describe("auth on protected endpoints", () => {
     const res = await request(app)
       .get("/api/questions")
       .set("Authorization", "Bearer not.a.real.jwt");
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(401);
   });
 });
 
@@ -155,6 +155,15 @@ describe("GET /api/questions/:questionId", () => {
     expect(res.status).toBe(200);
     expect(res.body.data.length).toBeGreaterThan(0);
     expect(res.body.data[0].keywords).toContain("filterme");
+  });
+
+  it("returns 401 and an Invalid token message when provided a bad JWT", async () => {
+    const res = await request(app)
+      .get("/api/questions") 
+      .set("Authorization", "Bearer this-is-obviously-not-a-valid-jwt-string");
+
+    expect(res.status).toBe(401);
+    expect(res.body.message).toBe("Invalid token");
   });
 
 });
