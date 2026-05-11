@@ -18,8 +18,16 @@ function errorHandler(err, req, res, next) {
     return res.status(400).json({ message: "Invalid JSON in request body" });
   }
 
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  if (err instanceof jwt.JsonWebTokenError || err instanceof jwt.TokenExpiredError) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
   if (err instanceof AppError) {
-    return res.status(err.status).json({ message: err.message });
+    return res.status(err.status).json({ message: err.message, msg: err.message });
   }
 
   if (req.log) {

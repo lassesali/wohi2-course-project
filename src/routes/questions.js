@@ -39,7 +39,7 @@ const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) cb(null, true);
-    else cb(new Error("Only image files are allowed"));
+    else cb(new ValidationError("Only image files are allowed"));
   },
   limits: { fileSize: 5 * 1024 * 1024 },
 });
@@ -295,18 +295,6 @@ router.delete("/:questionId", isOwner, async (req, res, next) => {
   } catch (err) { // Catch the error
     next(err);    // Pass it to our errorHandler.js
   } 
-});
-
-// Multer errors as JSON
-router.use((err, req, res, next) => {
-  if (
-    err instanceof multer.MulterError ||
-    err?.message === "Only image files are allowed"
-  ) {
-    return res.status(400).json({ msg: err.message });
-  }
-
-  next(err);
 });
 
 module.exports = router;
