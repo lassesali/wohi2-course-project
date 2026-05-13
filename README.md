@@ -1,6 +1,6 @@
 # 🧠 Quiz Game API 
 
-> **Status:** 🛡️ 100% Test Coverage (66/66) | 🚀 Successfully Deployed to Railway
+> **Status:** 🛡️ [100% Test Coverage (66/66)](https://lassesali.github.io/wohi2-course-project/) | 🚀 [Successfully Deployed to Railway](https://wohi2-course-project-production-0d80.up.railway.app/)
 > 
 > This project has evolved into a robust, defensively architected backend.
 > The foundational API architecture, authentication, and relational data logic are finalized and verified with a **100% test coverage** suite across all statements, branches, and functions.
