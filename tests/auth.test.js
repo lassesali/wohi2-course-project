@@ -4,6 +4,7 @@ const { request, app, prisma, resetDb, registerAndLogin } = require("./helpers")
 beforeEach(resetDb);
 
 describe("POST /api/auth/register", () => {
+
   it("returns 400 when email is missing on register", async () => {
     const res = await request(app)
       .post("/api/auth/register")
@@ -35,9 +36,11 @@ describe("POST /api/auth/register", () => {
       .send({ email: "dup@test.io", password: "x", name: "Z" });
     expect(res.status).toBe(409);
   });
+  
 });
 
 describe("POST /api/auth/login", () => {
+
   it("returns 401 for a non-existent email", async () => {
     const res = await request(app)
       .post("/api/auth/login")

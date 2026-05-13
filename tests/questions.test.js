@@ -10,6 +10,7 @@ const {
 beforeEach(resetDb);
 
 describe("auth on protected endpoints", () => {
+
   it("returns 401 when the Authorization header is missing", async () => {
     const res = await request(app).get("/api/questions");
     expect(res.status).toBe(401);
@@ -28,9 +29,11 @@ describe("auth on protected endpoints", () => {
       .set("Authorization", "Bearer not.a.real.jwt");
     expect(res.status).toBe(401);
   });
+
 });
 
 describe("GET /api/questions", () => {
+
   it("returns questions with data, page, limit, total, totalPages", async () => {
     const token = await registerAndLogin();
     const res = await request(app)
@@ -58,6 +61,7 @@ describe("GET /api/questions", () => {
 });
 
 describe("GET /api/questions (Math Clamping)", () => {
+
   it("clamps limit down to 100 and up to 1 (Triggers Math.min/max)", async () => {
     const token = await registerAndLogin();
     
@@ -73,9 +77,11 @@ describe("GET /api/questions (Math Clamping)", () => {
       .set("Authorization", `Bearer ${token}`);
     expect(resLow.body.limit).toBe(1);
   });
+
 });
 
 describe("Final Architectural Edge Cases", () => {
+
   it("removes old keywords when a question is updated (Testing set: [])", async () => {
     const token = await registerAndLogin();
     // 1. Create with two keywords
@@ -112,9 +118,11 @@ describe("Final Architectural Edge Cases", () => {
     // 3. formatQuestion should still show solved: true and not crash
     expect(res.body.solved).toBe(true);
   });
+
 });
 
 describe("GET /api/questions/:questionId", () => {
+
   it("returns 404 for an unknown question", async () => {
     const token = await registerAndLogin();
     const res = await request(app)
@@ -168,9 +176,8 @@ describe("GET /api/questions/:questionId", () => {
 
 });
 
-
-
 describe("POST /api/questions (validation)", () => {
+
   it("returns 400 when question is missing", async () => {
     const token = await registerAndLogin();
     const res = await request(app)
@@ -194,10 +201,11 @@ describe("POST /api/questions (validation)", () => {
     const question = await prisma.question.findUnique({ where: { id: res.body.id } });
     expect(question.userId).not.toBe(99999);
   });
+
 });
 
 describe("PUT /api/questions/:questionId (authorization)", () => {
-   
+
   it("returns 403 when editing someone else's question", async () => {
     const aliceToken = await registerAndLogin("alice@test.io", "Alice");
     const question = await createQuestion(aliceToken, { question: "Alice's question" });
@@ -223,7 +231,7 @@ describe("PUT /api/questions/:questionId (authorization)", () => {
       
     expect(res.status).toBe(404);
   });
-
+  
   it("returns 404 when attempting to edit a non-existent question (Triggers Line 18)", async () => {
     const token = await registerAndLogin();
     const res = await request(app)
@@ -237,6 +245,7 @@ describe("PUT /api/questions/:questionId (authorization)", () => {
 });
 
 describe("DELETE /api/questions/:questionId", () => {
+
   it("returns 200 and removes the question from the database", async () => {
     const token = await registerAndLogin();
     const question = await createQuestion(token, { question: "Test question" });
@@ -271,17 +280,21 @@ describe("DELETE /api/questions/:questionId", () => {
     // correctly parsed the snapshot and retained the solved: true status.
     expect(res.body.question.solved).toBe(true); 
   });
+
 });
 
 describe("unknown routes", () => {
+
   it("returns 404 with a message for an unknown route", async () => {
     const res = await request(app).get("/api/nope");
     expect(res.status).toBe(404);
     expect(res.body.message).toBe("Not found");
   });
+
 });
 
 describe("body parsing", () => {
+
   it("returns 400 (not 500) for malformed JSON", async () => {
     const res = await request(app)
       .post("/api/auth/register")
@@ -298,6 +311,7 @@ describe("body parsing", () => {
       .send('{"email":"a@b.io","password":"pw12345","name":"A"}');
     expect(res.status).toBe(400);
   });
+
 });
 
 describe("Edge Cases: File Uploads & String Keywords", () => {
@@ -369,6 +383,7 @@ describe("Edge Cases: File Uploads & String Keywords", () => {
 });
 
 describe("500 Internal Server Errors (Catch Blocks)", () => {
+
   it("catches errors in GET / and passes them to the error handler", async () => {
     const token = await registerAndLogin();
     
@@ -379,7 +394,7 @@ describe("500 Internal Server Errors (Catch Blocks)", () => {
       .get("/api/questions")
       .set("Authorization", `Bearer ${token}`);
 
-    expect(res.status).toBe(500); // Handled safely by your errorHandler.js!
+    expect(res.status).toBe(500); // Handled safely by our errorHandler.js!
   });
 
   it("catches errors in DELETE /:questionId and passes them to the error handler", async () => {
@@ -395,27 +410,29 @@ describe("500 Internal Server Errors (Catch Blocks)", () => {
 
     expect(res.status).toBe(500); 
   });
+
+  it("catches errors in PUT /:questionId and passes them to the error handler", async () => {
+    const token = await registerAndLogin();
+    const question = await createQuestion(token); // Ensure ownership so isOwner passes
+
+    // Force Prisma to throw a simulated crash when attempting to update
+    vi.spyOn(prisma.question, 'update').mockRejectedValueOnce(new Error("Simulated DB Crash"));
+
+    const res = await request(app)
+      .put(`/api/questions/${question.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ 
+        question: "Will this crash?", 
+        answer: "Yes" 
+      });
+
+    expect(res.status).toBe(500); // Verified by our global errorHandler.js
+  });
+
 });
 
-it("catches errors in PUT /:questionId and passes them to the error handler", async () => {
-  const token = await registerAndLogin();
-  const question = await createQuestion(token); // Ensure ownership so isOwner passes
+describe("formatQuestion Fallback Branches", () => {
 
-  // Force Prisma to throw a simulated crash when attempting to update
-  vi.spyOn(prisma.question, 'update').mockRejectedValueOnce(new Error("Simulated DB Crash"));
-
-  const res = await request(app)
-    .put(`/api/questions/${question.id}`)
-    .set("Authorization", `Bearer ${token}`)
-    .send({ 
-      question: "Will this crash?", 
-      answer: "Yes" 
-    });
-
-  expect(res.status).toBe(500); // Verified by your global errorHandler.js
-});
-
-describe("formatQuestion Fallback Branches (Coverage Restorer)", () => {
   it("safely formats a question that is missing relational data", async () => {
     const token = await registerAndLogin();
 
@@ -439,9 +456,10 @@ describe("formatQuestion Fallback Branches (Coverage Restorer)", () => {
     expect(res.status).toBe(200);
     
     // 3. This proves that formatQuestion hit the 'false' branches on lines 63-64
-    // without crashing your app!
+    // without crashing our app!
     expect(res.body.userName).toBeNull();
     expect(res.body.keywords).toEqual([]);
     expect(res.body.solved).toBe(false);
   });
+  
 });

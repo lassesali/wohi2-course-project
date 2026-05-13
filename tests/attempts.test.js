@@ -2,11 +2,10 @@ const { request, app, prisma, resetDb, registerAndLogin, createQuestion } = requ
 
 beforeEach(resetDb);
 
-
 describe("POST /api/questions/:questionId/play", () => {
   let token;
   let question;
-
+  
   // Set up a clean user and question before all tests in this block
   beforeEach(async () => {
     token = await registerAndLogin("player@test.io", "Player One");
@@ -18,8 +17,6 @@ describe("POST /api/questions/:questionId/play", () => {
 
   describe("1. Core Logic & Edge Cases", () => {
 
-
-    
     it("returns 201 and correct: true for an exact match", async () => {
       const res = await request(app)
         .post(`/api/questions/${question.id}/play`)
@@ -37,7 +34,7 @@ describe("POST /api/questions/:questionId/play", () => {
     });
 
     it("returns 201 and correct: true for a messy string (spaces and mixed case)", async () => {
-      // Testing your .toLowerCase().trim() defensive logic
+      // Testing our .toLowerCase().trim() defensive logic
       const res = await request(app)
         .post(`/api/questions/${question.id}/play`)
         .set("Authorization", `Bearer ${token}`)
@@ -60,9 +57,11 @@ describe("POST /api/questions/:questionId/play", () => {
       const attempt = await prisma.attempt.findFirst({ where: { questionId: question.id } });
       expect(attempt.isCorrect).toBe(false);
     });
+
   });
 
-  describe("2. Validation & Error Handling (The Strict Bouncer)", () => {
+  describe("2. Validation & Error Handling", () => {
+
     it("returns 400 when the answer field is missing entirely", async () => {
       const res = await request(app)
         .post(`/api/questions/${question.id}/play`)
@@ -101,9 +100,10 @@ describe("POST /api/questions/:questionId/play", () => {
       expect(res.status).toBe(404);
       expect(res.body.message).toBe("Question not found");
     });
+
   });
 
-  describe("3. Relational Data Integrity (The Architect Checks)", () => {
+  describe("3. Relational Data Integrity", () => {
     
     it("safely deletes attempts when a question is deleted (No Orphaned Records)", async () => {
       // 1. Play the question
@@ -123,7 +123,7 @@ describe("POST /api/questions/:questionId/play", () => {
       
       expect(deleteRes.status).toBe(200);
 
-      // 4. Verify the attempt was purged via your explicit deleteMany logic
+      // 4. Verify the attempt was purged via our explicit deleteMany logic
       attemptCount = await prisma.attempt.count({ where: { questionId: question.id } });
       expect(attemptCount).toBe(0);
     });
@@ -173,7 +173,9 @@ describe("POST /api/questions/:questionId/play", () => {
       const attemptCount = await prisma.attempt.count({ where: { questionId: question.id } });
       expect(attemptCount).toBe(1);
     });
+
   });
+
 });
 
 describe("POST /api/questions/:questionId/play", () => {
@@ -202,9 +204,11 @@ describe("POST /api/questions/:questionId/play", () => {
         .set("Authorization", `Bearer ${token}`);
       expect(updated.body.data[0].solved).toBe(true);
     });
+
   });
     
   describe("5. Multi-User Isolation", () => {
+
     it("ensures 'solved' status is private to each user", async () => {
       // 1. Setup: User A creates a question
       const tokenA = await registerAndLogin("userA@test.io", "User A"); //
@@ -233,6 +237,7 @@ describe("POST /api/questions/:questionId/play", () => {
       // The solved status must be false for User B because they haven't played it
       expect(resB.body.data[0].solved).toBe(false); 
     });
+
   });
 
 });

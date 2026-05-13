@@ -9,6 +9,7 @@ const {
 beforeEach(resetDb);
 
 describe("pagination clamping", () => {
+  
   it("clamps limit above 100 to 100", async () => {
     const token = await registerAndLogin();
     const res = await request(app)
@@ -61,9 +62,11 @@ describe("pagination clamping", () => {
     // Verify the data window actually shifted
     expect(page1Ids).not.toContain(page2.body.data[0].id);
   });
+
 });
 
 describe("title length boundary", () => {
+
   it("accepts a title of exactly 255 characters", async () => {
     const token = await registerAndLogin();
     const res = await request(app)
@@ -81,9 +84,11 @@ describe("title length boundary", () => {
       .send({ question: "a".repeat(256), answer: "C" });
     expect(res.status).toBe(400);
   });
+
 });
 
 describe("ID parsing", () => {
+
   it("returns 404 for /api/questions/0", async () => {
     const token = await registerAndLogin();
     const res = await request(app)
@@ -99,6 +104,7 @@ describe("ID parsing", () => {
       .set("Authorization", `Bearer ${token}`);
     expect(res.status).toBe(404);
   });
+
 });
 
 describe("file size boundary", () => {
@@ -131,9 +137,11 @@ describe("file size boundary", () => {
       });
     expect(res.status).toBe(400);
   });
+
 });
 
 describe("bcrypt 72-byte ceiling", () => {
+
   it("rejects passwords over 72 bytes at registration", async () => {
     const tooLong = "a".repeat(100);
     const res = await request(app)
@@ -149,4 +157,5 @@ describe("bcrypt 72-byte ceiling", () => {
       .send({ email: "x@test.io", password: exactly72, name: "X" });
     expect(res.status).toBe(201);
   });
+
 });

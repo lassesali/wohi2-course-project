@@ -24,7 +24,7 @@ describe("Utility & Edge Case Coverage", () => {
     consoleSpy.mockRestore();
   });
 
-it("logger uses 'info' level when outside of the test environment", () => {
+  it("logger uses 'info' level when outside of the test environment", () => {
     vi.stubEnv("NODE_ENV", "development");
     vi.stubEnv("LOG_LEVEL", ""); // Falsy forces the ternary to run
 
