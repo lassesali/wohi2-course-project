@@ -1,12 +1,12 @@
 # 🧠 Quiz Game API 
 
-> **Status:** 🛡️ [100% Test Coverage (66/66)](https://lassesali.github.io/wohi2-course-project/) | 🚀 [Successfully Deployed to Railway](https://wohi2-course-project-production-0d80.up.railway.app/)
+> **Status:** 🛡️ [100% Test Coverage (66/66)](https://lassesali.github.io/wohi2-course-project/) | 🚀 [Successfully Deployed to Railway](https://wohi2-course-project-production-0d80.up.railway.app/) | ⏳ Core Complete & Evaluating Features
 > 
 > This project has evolved into a robust, defensively architected backend.
 > The foundational API architecture, authentication, and relational data logic are finalized and verified with a **100% test coverage** suite across all statements, branches, and functions.
 
 ## 📖 Overview
-This repository contains a high-performance backend API for a user-driven quiz game. Beyond basic CRUD operations, this project focuses on **architectural integrity**, using modern middleware patterns for ownership, comprehensive error handling, and strict schema validation. It is currently in the transition phase between core development and containerized deployment.
+This repository contains a high-performance backend API for a user-driven quiz game. Beyond basic CRUD operations, this project focuses on **architectural integrity**, using modern middleware patterns for ownership, comprehensive error handling, and strict schema validation. 
 
 ## 💻 Tech Stack
 * **Runtime:** Node.js (v25.9.0+)
