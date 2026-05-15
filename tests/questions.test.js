@@ -207,19 +207,19 @@ describe("POST /api/questions (validation)", () => {
 describe("PUT /api/questions/:questionId (authorization)", () => {
 
   it("returns 403 when editing someone else's question", async () => {
-    const aliceToken = await registerAndLogin("alice@test.io", "Alice");
-    const question = await createQuestion(aliceToken, { question: "Alice's question" });
+    const sabrinaToken = await registerAndLogin("sabrina@hotmail.com", "Sabrina");
+    const question = await createQuestion(sabrinaToken, { question: "Sabrina's question" });
 
-    const bobToken = await registerAndLogin("bob@test.io", "Bob");
+    const juliaToken = await registerAndLogin("julia@hotmail.com", "Julia");
     const res = await request(app)
       .put(`/api/questions/${question.id}`)
-      .set("Authorization", `Bearer ${bobToken}`)
-      .send({ question: "hijacked", answer: "x" });
+      .set("Authorization", `Bearer ${juliaToken}`)
+      .send({ question: "In what year was Barron Trump, Donald Trump's youngest son, born?", answer: "2006" });
 
     expect(res.status).toBe(403);
 
     const after = await prisma.question.findUnique({ where: { id: question.id } });
-    expect(after.question).toBe("Alice's question");
+    expect(after.question).toBe("Sabrina's question");
   });
 
   it("returns 404 when the questionId is not a valid number (NaN) (Triggers Line 10)", async () => {
@@ -227,7 +227,7 @@ describe("PUT /api/questions/:questionId (authorization)", () => {
     const res = await request(app)
       .put(`/api/questions/not-a-number`) // Testing a PUT request with NaN
       .set("Authorization", `Bearer ${token}`)
-      .send({ question: "Q", answer: "A" });
+      .send({ question: "What fruit is yellow and shaped like a smile?", answer: "Banana" });
       
     expect(res.status).toBe(404);
   });
@@ -237,7 +237,7 @@ describe("PUT /api/questions/:questionId (authorization)", () => {
     const res = await request(app)
       .put(`/api/questions/99999`) // Testing a PUT request with a ghost ID
       .set("Authorization", `Bearer ${token}`)
-      .send({ question: "Q", answer: "A" });
+      .send({ question: "What animal says “meow”?", answer: "Cat" });
       
     expect(res.status).toBe(404);
   });
@@ -308,7 +308,7 @@ describe("body parsing", () => {
     const res = await request(app)
       .post("/api/auth/register")
       .set("Content-Type", "text/plain")
-      .send('{"email":"a@b.io","password":"pw12345","name":"A"}');
+      .send('{"email":"billg@microsoft.com","password":"pw12345","name":"Bill Gates"}');
     expect(res.status).toBe(400);
   });
 
@@ -319,14 +319,14 @@ describe("Edge Cases: File Uploads & String Keywords", () => {
 
   // SETUP: Create a user and get an auth token before running these tests
   beforeEach(async () => {
-    token = await registerAndLogin("edgecase@test.io", "Edge Case User");
+    token = await registerAndLogin("zuckerberg@fb.com", "Mark Zuckerberg");
   });
 
   it("creates a question with an image upload", async () => {
     const res = await request(app)
       .post("/api/questions")
       .set("Authorization", `Bearer ${token}`)
-      .field("question", "What color is the sky?")
+      .field("question", "What color is the sky on a sunny day?")
       .field("answer", "Blue")
       .attach("image", Buffer.from("fake-image-data"), "test.png"); 
 
@@ -353,8 +353,8 @@ describe("Edge Cases: File Uploads & String Keywords", () => {
     const res = await request(app)
       .post("/api/questions")
       .set("Authorization", `Bearer ${token}`)
-      .field("question", "What is 2+2?")
-      .field("answer", "4")
+      .field("question", "What is 2+3?")
+      .field("answer", "5")
       .attach("image", Buffer.from("fake-text-data"), "document.txt"); 
 
     expect(res.status).toBe(400);
@@ -370,13 +370,13 @@ describe("Edge Cases: File Uploads & String Keywords", () => {
       .post("/api/questions")
       .set("Authorization", `Bearer ${token}`)
       .send({
-        question: "What does HTML stand for?",
-        answer: "HyperText Markup Language",
-        keywords: "web, frontend, basics" 
+        question: "What CSS property changes the color of text?",
+        answer: "color",
+        keywords: "CSS, color, text" 
       });
 
     expect(res.status).toBe(201);
-    expect(res.body.keywords).toContain("frontend");
+    expect(res.body.keywords).toContain("color");
     expect(res.body.keywords.length).toBe(3);
   });
 

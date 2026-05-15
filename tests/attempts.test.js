@@ -8,7 +8,7 @@ describe("POST /api/questions/:questionId/play", () => {
   
   // Set up a clean user and question before all tests in this block
   beforeEach(async () => {
-    token = await registerAndLogin("player@test.io", "Player One");
+    token = await registerAndLogin("zuckerberg@fb.com", "Player One");
     question = await createQuestion(token, {
       question: "What is the capital of France?",
       answer: "Paris",
@@ -211,8 +211,8 @@ describe("POST /api/questions/:questionId/play", () => {
 
     it("ensures 'solved' status is private to each user", async () => {
       // 1. Setup: User A creates a question
-      const tokenA = await registerAndLogin("userA@test.io", "User A"); //
-      const q = await createQuestion(tokenA, { answer: "Secret" }); //
+      const tokenA = await registerAndLogin("billg@microsoft.com", "Bill Gates");
+      const q = await createQuestion(tokenA, { answer: "Secret" }); 
 
       // 2. User A solves their own question
       await request(app)
@@ -227,7 +227,7 @@ describe("POST /api/questions/:questionId/play", () => {
       expect(resA.body.data[0].solved).toBe(true);
 
       // 4. User B logs in
-      const tokenB = await registerAndLogin("userB@test.io", "User B"); //
+      const tokenB = await registerAndLogin("zuckerberg@fb.com", "Mark Zuckerberg"); 
 
       // 5. Verify User B sees the same question as UNSOLVED
       const resB = await request(app)
