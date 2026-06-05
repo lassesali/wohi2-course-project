@@ -52,7 +52,7 @@ export class AuthUI {
     // Explicitly tell Google to render the widget when switching to Register mode
     if (this.isRegisterMode && typeof grecaptcha !== "undefined") {
       grecaptcha.render('recaptcha-container', {
-        'sitekey': '6Lej_w0tAAAAACqs-pgeBWJ225EJxik4iFUQ7GYT'
+        'sitekey': '6LegZQ4tAAAAADkZwCsZFOZ0CIh2cXMDyPaaOqd4'
       });
     }
 
