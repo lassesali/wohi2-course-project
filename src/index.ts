@@ -3,7 +3,7 @@ import logger from "./lib/logger.js";
 import { prisma } from "./lib/prisma.js"; // Named import matching our Prisma v7 client setup
 import os from "os";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // Check if the user ran the script with the '--host' flag.
 // If '--host' is passed, bind to '0.0.0.0' (all interfaces). Otherwise, secure it to localhost.
@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 const exposeToNetwork = process.argv.includes("--host");
 const HOST = exposeToNetwork ? "0.0.0.0" : "127.0.0.1";
 
-const server = app.listen(PORT, HOST, () => {
+const server = app.listen(PORT, "0.0.0.0", () => {
   logger.info({ port: PORT, host: HOST }, "server listening");
 
   console.log(`\n🚀 Server is running!`);
