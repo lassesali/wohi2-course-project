@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -27,8 +27,6 @@ model Question {
   user     User @relation(fields: [userId], references: [id])
   imageUrl String? @db.VarChar(255)
   attempts  Attempt[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
 
   @@map("questions")
 }
@@ -53,5 +51,3 @@ model Attempt {
 
   @@map("attempts")
 }
-
-

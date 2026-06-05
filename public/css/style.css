@@ -1,0 +1,568 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --bg-main: #252041;
+  --bg-card: #352e5d;
+  --bg-input: #4b4279;
+  --bg-search: #3d346b;
+  --text-main: #ffffff;
+  --text-muted: #817a9b;
+  --accent-yellow: #ffc72c;
+  --accent-green: #4caf50;
+}
+
+body {
+      font-family: "Nunito", sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #e0e0e0;
+      min-height: 100vh;
+}
+
+/* Navbar positioning */
+.navbar {
+  background: rgba(255, 255, 255, 0.05) !important;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.navbar-brand {
+  font-family: 'Nunito', 'Poppins', sans-serif !important;
+  letter-spacing: 1.5px;
+  /* Gradient text effect */
+  background: linear-gradient(-45deg, var(--accent-yellow), #ff8c00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800 !important; 
+}
+
+.btn {
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+/* Buttons */
+.btn-warning {
+  /* Yellow to orange background gradient */
+  background: linear-gradient(45deg, var(--accent-yellow), #ff9800) !important;
+  border: none !important; /* Remove border so it doesn't clash with the gradient */
+  color: #252041 !important;
+  transition: all 0.2s ease-in-out;
+  width: 90% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block !important;
+  border-radius: 10px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.btn-warning:hover {
+  /* Reverse the gradient slightly for a cool hover effect */
+  background: linear-gradient(45deg, #ff9800, var(--accent-yellow)) !important;
+  box-shadow: 0 6px 15px rgba(184, 134, 11, 0.6) !important; 
+  transform: translateY(-1px); 
+}
+
+.btn-play {
+  background-color: var(--accent-green) !important;
+  border-color: var(--accent-green) !important;
+  color:  #fff !important;
+  border-radius: 10px;
+  font-weight: 800 !important;
+  padding: 6px 24px;
+  font-size: 0.85rem;
+}
+
+.btn-play:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 18px rgba(81, 207, 102, 0.35);
+}
+
+.btn-logout {
+  background: transparent;
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: all 0.2s;
+  padding-top: 0.6rem !important;
+  padding-bottom: 0.6rem !important;
+}
+
+.btn-logout:hover {
+  background: #ff6b6b;
+  color: #fff;
+  box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+}
+
+.btn-edit,
+#detail-edit-btn {
+  background: rgba(167, 139, 250, 0.15);
+  color: #c4b5fd;
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 10px;
+}
+
+.btn-edit:hover {
+  background: rgba(167, 139, 250, 0.3);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+}
+
+.btn-delete,
+#detail-delete-btn {
+  background: rgba(255, 107, 107, 0.12);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  border-radius: 10px;
+
+}
+
+.btn-delete:hover {
+  background: rgba(255, 107, 107, 0.25);
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+#auth-section .card {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+  width: 97.5% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  padding-top: 1.25rem !important; 
+  padding-bottom: 1.25rem !important;
+}
+
+/* Cards & Containers */
+.card {
+  background-color: var(--bg-card) !important;
+  border: none !important;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+  /* Changes the border to your muted gray color */
+  border-color: #817a9b !important; 
+  /* Adds a deeper, more pronounced shadow */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important; 
+  /* Relocates the card slightly upwards */
+  transform: translateY(-4px); 
+}
+
+
+
+.stats-container {
+  background-color: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Custom Badges */
+.keyword-badge {
+  color: #c4b5fd !important;
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 20px;
+  font-weight: 800 !important;
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  background-color: rgba(167, 139, 250, 0.2);
+  margin-bottom: 0.5rem !important; /* Creates a clean gap between rows */
+  display: inline-block !important; /* Ensures the browser respects the vertical margin */
+}
+
+/* Search Component */
+.search-wrapper {
+  /* background-color: var(--bg-search); */
+  background-color: transparent !important;
+  border-radius: 20px;
+  display: flex;
+  padding: 4px;
+}
+
+.search-input {
+  background-color: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  box-shadow: none !important;
+  padding-left: 15px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.search-input:focus {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+.search-btn {
+  background: rgba(167, 139, 250, 0.2);
+  color: #c4b5fd !important;
+  border-radius: 10px;
+  padding: 4px 20px;
+  font-size: 0.85rem;
+  border: none;
+}
+
+.search-btn:hover {
+  background: rgba(167, 139, 250, 0.35);
+}
+
+
+.see-answer {
+  color: #a78bfa !important;
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: 800 !important;
+}
+
+.see-answer:hover {
+  color: #c4b5fd !important;
+}
+
+.text-warning {
+  color: var(--accent-yellow) !important;
+}
+
+/* =========================================
+   Auth UI Interactive Effects
+   ========================================= */
+
+/* 1. Yellow border for active Email and Password fields */
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus
+{
+  border-color: var(--accent-yellow) !important;
+  /* Adds a subtle yellow glow around the border to match Bootstrap's focus style */
+  box-shadow: 0 0 0 0.08rem rgba(255, 199, 44, 0.75) !important; 
+  outline: none;
+}
+
+#auth-section input[type="email"],
+#auth-section input[type="password"],
+#auth-section input[type="text"]
+{
+  width: 90% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  background-color: #46436c !important; /* A soft, modern light blue */
+  color: #fdfdfd !important;
+  border-radius: 10px !important;
+}
+
+.search-input {
+  /* Changed from transparent to your auth background color */
+  background-color: #46436c !important; 
+  /* Matched the slightly more visible border from the auth inputs */
+  border: 1px solid rgba(255, 255, 255, 0.25) !important; 
+  color: white !important;
+  box-shadow: none !important;
+  padding-left: 15px;
+  font-size: 0.85rem;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.search-input:focus {
+  /* Ensure it stays the same color when clicked */
+  background-color: #46436c !important; 
+  color: white !important;
+}
+
+#auth-section label {
+  color: rgba(255, 255, 255, 0.65) !important;
+  width: 90% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block !important; /* Ensures the auto margins can center the label container */
+  text-align: left; /* Keeps the actual text aligned to the left edge of that 90% box */
+  font-weight: 700 !important; /* Standard text is 400, 800 makes it extra bold */
+  letter-spacing: 1px !important;
+}
+
+
+#questions-container h3 {
+  font-weight: 900 !important; 
+}
+
+#auth-section h2,
+#auth-section h3 {
+  font-weight: 900 !important; 
+}
+
+/* 2. Dark yellow shadow on Log In button (modifying your existing .btn-warning) */
+.btn-warning {
+  transition: all 0.2s ease-in-out; /* Smooth transition for the hover effect */
+}
+
+.btn-warning:hover {
+  background-color: #e5b327 !important;
+  /* Dark yellow/golden shadow */
+  box-shadow: 0 6px 15px rgba(184, 134, 11, 0.6) !important; 
+  transform: translateY(-1px); /* Optional: gives a slight "lift" effect */
+}
+
+/* 3. Sign Up link mouseover effect */
+/* Targets links specifically within your auth section */
+#auth-section a {
+  transition: all 0.2s ease-in-out;
+  font-weight: 800 !important; 
+}
+
+#auth-section a:hover {
+  color: var(--accent-yellow) !important;
+  text-shadow: 0 0 8px rgba(255, 199, 44, 0.4); /* Subtle yellow text glow */
+  text-decoration: !important;
+}
+
+/* Light green left border for solved question cards */
+.card-solved {
+  border-left: 5px solid #66bb6a !important; 
+}
+
+/* Lock the green left border in place even when hovering */
+.card-solved:hover {
+  border-left-color: #66bb6a !important;
+}
+
+#new-question-btn {
+  width: fit-content !important; 
+  padding-left: 28px !important;  /* Adjust this for more/less left padding */
+  padding-right: 28px !important; /* Adjust this for more/less right padding */
+  margin-left: 0 !important;   /* Overrides the global .btn-warning centering */
+  margin-right: 0 !important;  /* Overrides the global .btn-warning centering */
+  font-size: 0.95rem !important; /* Makes the text and arrow larger */
+  font-weight: 800 !important; 
+}
+
+/* Match New/Edit Question inputs to Auth inputs */
+#question-form .form-control {
+  background-color: #46436c !important;
+  color: #fdfdfd !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Ensure they keep the same background on focus and add the yellow glow */
+#question-form .form-control:focus {
+  background-color: #46436c !important;
+  color: white !important;
+  border-color: var(--accent-yellow) !important;
+  box-shadow: 0 0 0 0.08rem rgba(255, 199, 44, 0.75) !important; 
+  outline: none;
+}
+
+/* Match New Question labels to Auth labels */
+#question-form label {
+  color: rgba(255, 255, 255, 0.65) !important;
+  font-weight: 700 !important; 
+  letter-spacing: 1px !important;
+}
+
+/* Match the "New Question" title font weight to the Auth titles */
+#questions-container .card-body h3.text-warning.mb-4 {
+  font-weight: 900 !important;
+}
+
+/* Custom colors for the Back button */
+#back-btn {
+  color: #a78bfa !important; /* Soft purple */
+  transition: color 0.2s ease-in-out;
+  font-size: 1.15rem !important; /* Makes the text and arrow larger */
+  font-weight: 600 !important; /* Optional: adds a slight weight for readability */
+}
+
+#back-btn:hover {
+  color: #c4b5fd !important; /* Lighter purple on hover */
+}
+
+/* Make the Create/Save button width fit its content and align left */
+#question-form button[type="submit"] {
+  width: fit-content !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Make the Play Form Submit button fit its content and center it */
+#play-form button[type="submit"].btn-play {
+  width: fit-content !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block !important;
+}
+
+.btn-outline-info:hover,
+#detail-edit-btn:hover {
+  /* 15% opacity version of Bootstrap's info cyan */
+  background-color: rgba(13, 202, 240, 0.15) !important; 
+  color: #c4b5fd;
+}
+
+.btn-outline-danger:hover,
+#detail-delete-btn:hover {
+  /* 15% opacity version of Bootstrap's danger red */
+  background-color: rgba(220, 53, 69, 0.15) !important; 
+  color: #ff6b6b;
+}
+
+/* Make form fields expand fully with clean parent container gaps */
+#question-form .form-control,
+.reply-form .form-control,
+.answer-form .form-control {
+  width: 100% !important;
+  display: block;
+  background-color: #46436c !important;
+  color: #fdfdfd !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-sizing: border-box; /* Ensures padding/borders don't cause layout overflow */
+}
+
+/* Maintain matching color profiles on interaction/focus states */
+#question-form .form-control:focus,
+.reply-form .form-control:focus,
+.answer-form .form-control:focus {
+  background-color: #46436c !important;
+  color: white !important;
+  border-color: var(--accent-yellow) !important;
+  box-shadow: 0 0 0 0.08rem rgba(255, 199, 44, 0.75) !important; 
+  outline: none;
+}
+
+/* Target the textarea inside the play form specifically */
+#play-form textarea.form-control {
+  width: 100% !important;
+  display: block;
+  background-color: #46436c !important;
+  color: #fdfdfd !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-sizing: border-box;
+}
+
+/* Apply the glowing yellow border state when typing your answer */
+#play-form textarea.form-control:focus {
+  background-color: #46436c !important;
+  color: white !important;
+  border-color: var(--accent-yellow) !important;
+  box-shadow: 0 0 0 0.08rem rgba(255, 199, 44, 0.75) !important; 
+  outline: none;
+}
+
+/* Make PLAY and Submit buttons taller by increasing vertical padding */
+.btn-play,
+#play-form button[type="submit"].btn-play,
+.question-actions .btn-success { /* Adjust this selector if your list play button uses a different class */
+  padding-top: 0.6rem !important;
+  padding-bottom: 0.6rem !important;
+  font-weight: 700 !important; /* Makes the text pop a bit more in the larger space */
+}
+
+/* Play screen */
+.play-question-text {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  padding: 1.5rem 0;
+  line-height: 1.4;
+}
+
+/* Match the Answer label in the Play form to the Create Question form labels */
+#play-form .form-label,
+#question-form label 
+{
+  font-family: 'Nunito', sans-serif !important;
+  font-size: 13.6px !important;
+  font-weight: 700 !important;
+  color: rgb(187, 187, 187) !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  margin-bottom: 4.8px !important;
+}
+
+/* Make the answer field background transparent in the see-answer/detail view */
+#detail-view .form-control,
+#answer-form .form-control,
+.see-answer-container .form-control {
+  background-color: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important; /* Keeps a subtle border matching the container style */
+  color: #fdfdfd !important;
+}
+
+/* Override the hardcoded inline background-color on the answer display div */
+#questions-container .card-body .mb-2 div[style*="background-color: var(--bg-input)"] {
+  background-color: transparent !important;
+  border: none !important;
+  padding-left: 0 !important; /* Optional: aligns "Tokyo" perfectly with the "Answer" label above it */
+}
+
+/* Change the author name text color to a specific dark gray */
+#questions-container .card-body p.text-muted {
+  color: rgb(136, 136, 136) !important; /* Standard dark gray color */
+}
+
+/* Change the base text color of the incorrect answer alert */
+#play-result .alert-danger {
+  color: rgb(255, 107, 107) !important;
+  background-color: rgba(255, 107, 107, 0.12) !important;
+  border: 1px solid rgba(223, 116, 116, 0.345) !important;
+  border-radius: 10px;
+}
+
+#play-result .alert-success {
+  color: #51cf66 !important;
+  background-color: rgba(81, 207, 102, 0.15) !important;
+  border: 1px solid rgba(81, 207, 102, 0.3) !important;
+  border-radius: 10px;
+  box-shadow: 0 0 30px rgba(81, 207, 102, 0.15);
+}
+
+/* Change the color of the actual correct answer inside the bold tag */
+#play-result .alert-danger strong {
+  color: rgb(255, 210, 0) !important;
+}
+
+#random-btn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding-left: 12px !important; 
+  padding-right: 12px !important; 
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  border-radius: 10px; /* Fully rounded pill shape */
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  transition: all 0.3s ease;
+}
+
+#random-btn:hover {
+  transform: translateY(-2px); /* Moves up slightly */
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+  background: linear-gradient(135deg, #218838, #1ba87e);
+}
+
+#random-btn:active {
+  transform: translateY(1px); /* Presses down on click */
+}

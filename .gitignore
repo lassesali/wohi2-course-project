@@ -1,5 +1,7 @@
-node_modules/
+node_modules
 .env
+.env.test
+/generated/prisma
 .DS_Store
 /src/generated/prisma
 public/uploads/*
