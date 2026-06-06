@@ -108,19 +108,38 @@ describe("GET /api/questions/random", () => {
   });
 
   it("calls next(err) if the database throws an unexpected error", async () => {
-    // 1. Spy on Prisma and force it to violently reject the very next time 'findMany' is called
-    const spy = vi.spyOn(prisma.question, "findMany").mockRejectedValueOnce(new Error("Database connection completely lost!"));
+    // 1. Seed a question so count > 0
+    await prisma.question.create({
+      data: { question: "Q1", answer: "A1", userId: userId }
+    });
 
-    // 2. Attempt to make the standard request
+    // 2. Spy on findMany
+    const spy = vi.spyOn(prisma.question, "findMany").mockRejectedValueOnce(new Error("Database completely lost!"));
+
     const res = await request(app)
       .get("/api/questions/random")
       .set("Authorization", `Bearer ${token}`);
 
-    // 3. Assert that your global error handler caught the 'next(err)' (typically results in a 500 status)
     expect(res.status).toBe(500);
-    
-    // 4. Clean up the spy so it doesn't break your other tests!
     spy.mockRestore();
   });
   
+  it("returns a 200 OK with an empty array when the database is completely empty", async () => {
+    // 1. We do NOT seed any questions here. 
+    // The database is guaranteed empty because of beforeEach(resetDb).
+
+    // 2. Attempt to fetch random questions
+    const res = await request(app)
+      .get("/api/questions/random")
+      .set("Authorization", `Bearer ${token}`);
+
+    // 3. Assert that the request succeeded (200 OK)
+    expect(res.status).toBe(200);
+    
+    // 4. Assert that the payload is exactly an empty array
+    expect(res.body).toBeInstanceOf(Array);
+    expect(res.body).toHaveLength(0);
+    expect(res.body).toEqual([]);
+  });
+
 });

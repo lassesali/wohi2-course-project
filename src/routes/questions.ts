@@ -160,18 +160,38 @@ router.get("/", async (req: CustomRequest, res: Response, next: NextFunction) =>
 // GET /api/questions/random
 router.get("/random", async (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
-    // Fetch only the IDs of all questions 
-    const allIds = await prisma.question.findMany({
-      select: { id: true },
-    });
 
-    // Shuffle the IDs and pick the first 10
-    const randomIds = allIds
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 10)
-      .map((q) => q.id);
+    // Get the total count
+    const questionCount = await prisma.question.count();
 
-    // Fetch the complete data for those 10 random IDs
+    // Handle the edge case where the database has fewer than 10 questions
+    const questionsToFetch = Math.min(10, questionCount);
+
+    if (questionsToFetch === 0) {
+      return res.status(200).json([]); // Exits early and successfully
+    }
+
+    // Generate a Set of unique random numbers between 0 and (questionCount - 1)
+    const randomIndices = new Set<number>();
+    while (randomIndices.size < questionsToFetch) {
+      const randomIndex = Math.floor(Math.random() * questionCount);
+      randomIndices.add(randomIndex);
+    }
+
+    // Fetch ONLY the IDs using the skip logic.     
+    const randomIdObjects = await Promise.all(
+      Array.from(randomIndices).map((skipIndex) =>
+        prisma.question.findFirst({
+          skip: skipIndex,
+          select: { id: true }, // Only grab the ID, nothing else
+        })
+      )
+    );
+
+    // Extract just the numbers/strings from the objects
+    const randomIds = randomIdObjects.map(q => q?.id).filter(Boolean);
+
+    // Fetch the rich data for all 10 questions in a SINGLE query
     const randomQuestions = await prisma.question.findMany({
       where: {
         id: { in: randomIds },
@@ -179,16 +199,15 @@ router.get("/random", async (req: CustomRequest, res: Response, next: NextFuncti
       include: {
         keywords: true,
         user: true,
-        attempts: { where: { userId: Number(req.user.userId), isCorrect: true }, take: 1 },
+        attempts: { 
+          where: { userId: Number(req.user.userId), isCorrect: true }, 
+          take: 1 
+        },
         _count: { select: { attempts: true } },
       },
     });
 
-    // Prisma's `in` operator returns results ordered by ID by default. 
-    // Shuffle the final results array so the order is truly random every time.
-    const shuffledQuestions = randomQuestions.sort(() => 0.5 - Math.random());
-
-    res.json(shuffledQuestions.map(formatQuestion));
+    res.json(randomQuestions.map(formatQuestion));
   } catch (err) {
     next(err);
   }
