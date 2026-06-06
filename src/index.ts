@@ -3,38 +3,50 @@ import logger from "./lib/logger.js";
 import { prisma } from "./lib/prisma.js"; // Named import matching our Prisma v7 client setup
 import os from "os";
 
-const PORT = process.env.PORT || 8080;
+// Railway provides process.env.PORT automatically.
+// We parse it to a number just to be safe, defaulting to 3000 locally.
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-// Check if the user ran the script with the '--host' flag.
-// If '--host' is passed, bind to '0.0.0.0' (all interfaces). Otherwise, secure it to localhost.
-// If '--host' is active, find and print the actual network IP address.
+// Railway sets NODE_ENV to "production" by default. 
+const isProduction = process.env.NODE_ENV === "production";
 
-const exposeToNetwork = process.argv.includes("--host");
+// Expose to network if we pass the flag locally, OR if we are deployed to Railway.
+const exposeToNetwork = process.argv.includes("--host") || isProduction;
+
+// Railway needs 0.0.0.0 to route traffic. Locally, we default to localhost (127.0.0.1) for security.
 const HOST = exposeToNetwork ? "0.0.0.0" : "127.0.0.1";
 
-const server = app.listen(PORT, "0.0.0.0", () => {
+const server = app.listen(PORT, HOST, () => {
   logger.info({ port: PORT, host: HOST }, "server listening");
 
   console.log(`\n🚀 Server is running!`);
-  console.log(`➜  Local:   http://localhost:${PORT}`);  
 
-  if (exposeToNetwork) {
-    const networkInterfaces = os.networkInterfaces();
-    for (const interfaceName in networkInterfaces) {
-      const interfaces = networkInterfaces[interfaceName];
-      if (interfaces) {
-        for (const iface of interfaces) {
-          // Look for an external IPv4 address
-          if (iface.family === "IPv4" && !iface.internal) {
-            console.log(`➜  Network: http://${iface.address}:${PORT}`);
+  if (isProduction) {
+    // What prints on Railway
+    console.log(`➜  Environment: Production (Railway)`);
+    // Add your Railway public URL here if you map it to an env variable
+  } else {
+    // What prints on your machine
+    console.log(`➜  Local:   http://localhost:${PORT}`);  
+
+    if (exposeToNetwork) {
+      const networkInterfaces = os.networkInterfaces();
+      for (const interfaceName in networkInterfaces) {
+        const interfaces = networkInterfaces[interfaceName];
+        if (interfaces) {
+          for (const iface of interfaces) {
+            if (iface.family === "IPv4" && !iface.internal) {
+              console.log(`➜  Network: http://${iface.address}:${PORT}`);
+            }
           }
         }
       }
     }
   }
+  
   console.log(""); 
 });
-
+  
 async function shutdown(signal: string) {
   logger.info({ signal }, "shutting down");
   
