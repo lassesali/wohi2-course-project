@@ -209,7 +209,11 @@ router.get("/random", async (req: CustomRequest, res: Response, next: NextFuncti
 
     // Prisma's `in` operator returns results ordered by ID by default. 
     // Shuffle the final results array so the order is truly random every time.
-    const shuffledQuestions = randomQuestions.sort(() => 0.5 - Math.random());    
+    const shuffledQuestions = [...randomQuestions];
+    for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+    }
 
     res.json(shuffledQuestions.map(formatQuestion));
   } catch (err) {
